@@ -1,8 +1,10 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
-import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
+import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { AppService } from "./app.service";
+import { JwtAuthGuard } from "./common/guards/jwt.auth.guard";
 
 @Controller()
+@ApiTags("/api")
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -11,12 +13,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('/protected')
+  @Get("/protected")
   @UseGuards(JwtAuthGuard)
   async protected(@Req() req) {
-    return {
-      "message": "AuthGuard works 🎉",
-      "authenticated_user": req.user
-    };
+    return { message: "AuthGuard works 🎉", authenticated_user: req.user };
   }
 }
