@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { AuthModule } from "src/auth/auth.module";
 import { SupabaseStrategy } from "src/auth/strategies/supabase.strategy";
 import { RbacGuard } from "src/common/guard/rbac.guard";
@@ -13,6 +15,10 @@ import { ContactService } from "./contact.service";
   imports: [ConfigModule, AuthModule],
   controllers: [ContactController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     ContactService,
     PrismaService,
     RedisService,

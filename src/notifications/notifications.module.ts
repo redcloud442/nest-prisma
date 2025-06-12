@@ -1,6 +1,8 @@
 import { Module, forwardRef } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 import { JwtModule, JwtService } from "@nestjs/jwt";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { AuthModule } from "src/auth/auth.module";
 import { SupabaseStrategy } from "src/auth/strategies/supabase.strategy";
 import { ContextService } from "src/common/context/context.service";
@@ -25,6 +27,10 @@ import { NotificationsService } from "./notifications.service";
   ],
   controllers: [NotificationsController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     NotificationsService,
     PrismaService,
     RedisService,
