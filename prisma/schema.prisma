@@ -6,10 +6,32 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model notification_table {
+  notification_id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  notification_title     String
+  notification_message   String
+  notification_created_at DateTime @default(now())
+  notification_image_url String?
+  notification_user_id   String  
+  notification_is_read   Boolean @default(false)
+  notification_is_broadcast Boolean @default(false)
+
+  @@index([notification_user_id])
+  @@map("notification_table")
+}
+
+model contact_table {
+  contact_id String @id @default(auto()) @map("_id") @db.ObjectId
+  contact_name String
+  contact_fb_link String
+  contact_category String
+  contact_user_id String
+  contact_created_at DateTime @default(now())
 }

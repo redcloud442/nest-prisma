@@ -17,18 +17,17 @@ async function bootstrap() {
   app.use(new LoggerMiddleware().use);
   app.use(new ErrorMiddleware().use);
 
-  app.setGlobalPrefix("api");
+  app.setGlobalPrefix("api/v2");
 
   const config = new DocumentBuilder()
     .setTitle("My API")
     .setDescription("The API description")
     .setVersion("1.0")
-    .setBasePath("api")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api/docs", app, document);
 
-  await app.listen(8000);
+  await app.listen(4000);
 }
 bootstrap();

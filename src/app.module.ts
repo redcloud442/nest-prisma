@@ -3,12 +3,22 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { ContactModule } from "./contact/contact.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 import { PrismaService } from "./prisma/prisma.service";
-import { UserModule } from "./user/user.module";
+import { RedisService } from "./redis/redis.service";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, UserModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ".env",
+    }),
+    NotificationsModule,
+    ContactModule,
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, RedisService],
 })
 export class AppModule {}
