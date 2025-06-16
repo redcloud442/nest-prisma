@@ -1,3 +1,4 @@
-.env
-.dockerignore
-.dist
+node_modules
+.next
+.env*
+*.log
