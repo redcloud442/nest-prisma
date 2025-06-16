@@ -32,7 +32,9 @@ export class RbacGuard implements CanActivate {
       requiredRoles.includes(role?.toUpperCase())
     );
 
-    if (!hasRole) {
+    const isAuthenticated = request.user.role === "authenticated";
+
+    if (!hasRole || !isAuthenticated) {
       throw new UnauthorizedException("User does not have the required role");
     }
 
