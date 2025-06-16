@@ -15,6 +15,17 @@ export class NotificationsService {
   async getNotification(userId: string, take: number, skip: number) {
     const offset = take * skip;
 
+    const readBroadcasts = await this.prisma.user_broadcast_read_table.findMany(
+      {
+        where: { user_id: userId },
+        select: { broadcast_notification_id: true },
+      }
+    );
+
+    const readBroadcastIds = new Set(
+      readBroadcasts.map((b) => b.broadcast_notification_id)
+    );
+
     const notification = await this.prisma.notification_table.findMany({
       where: {
         OR: [
@@ -22,7 +33,7 @@ export class NotificationsService {
           { notification_is_broadcast: true },
         ],
       },
-      take: take,
+      take,
       skip: offset,
       orderBy: {
         notification_created_at: "desc",
@@ -32,22 +43,84 @@ export class NotificationsService {
     const notification_count = await this.prisma.notification_table.count({
       where: {
         OR: [
-          {
-            notification_user_id: userId,
-          },
-          {
-            notification_is_broadcast: true,
-          },
+          { notification_user_id: userId },
+          { notification_is_broadcast: true },
         ],
       },
     });
 
-    const returnData = {
+    if (
+      notification.some(
+        (item) =>
+          item.notification_user_id === userId &&
+          item.notification_is_read === false
+      )
+    ) {
+      await this.prisma.notification_table.updateMany({
+        where: {
+          notification_user_id: userId,
+          notification_is_read: false,
+        },
+        data: {
+          notification_is_read: true,
+        },
+      });
+    }
+
+    const newReadBroadcasts = notification
+      .filter(
+        (item) =>
+          item.notification_is_broadcast &&
+          !readBroadcastIds.has(item.notification_id)
+      )
+      .map((item) => ({
+        user_id: userId,
+        broadcast_notification_id: item.notification_id,
+      }));
+
+    if (newReadBroadcasts.length > 0) {
+      await this.prisma.user_broadcast_read_table.createMany({
+        data: newReadBroadcasts,
+      });
+    }
+
+    return {
       notification,
       notification_count,
     };
+  }
 
-    return returnData;
+  async getNotificationCount(userId: string) {
+    const personalUnreadCount = await this.prisma.notification_table.count({
+      where: {
+        notification_user_id: userId,
+        notification_is_read: false,
+      },
+    });
+
+    const readBroadcasts = await this.prisma.user_broadcast_read_table.findMany(
+      {
+        where: { user_id: userId },
+        select: { broadcast_notification_id: true },
+      }
+    );
+
+    const readBroadcastIds = readBroadcasts.map(
+      (b) => b.broadcast_notification_id
+    );
+
+    const broadcastUnreadCount = await this.prisma.notification_table.count({
+      where: {
+        notification_is_broadcast: true,
+        notification_id: {
+          notIn: readBroadcastIds,
+        },
+      },
+    });
+
+    return {
+      notification_count: personalUnreadCount + broadcastUnreadCount,
+    };
   }
 
   async sendToUser(params: SendNotificationFormDto) {
@@ -74,6 +147,11 @@ export class NotificationsService {
     await this.prisma.notification_table.createMany({
       data: notificationData,
     });
+
+    return {
+      success: true,
+      message: "Notification sent successfully",
+    };
   }
 
   async broadcast(params: SendNotificationFormDto) {

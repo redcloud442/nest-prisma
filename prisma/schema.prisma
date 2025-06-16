@@ -18,7 +18,7 @@ model notification_table {
   notification_title     String
   notification_message   String
   notification_created_at DateTime @default(now())
-  notification_image_url String?
+  notification_image_url String[]
   notification_user_id   String  
   notification_is_read   Boolean @default(false)
   notification_is_broadcast Boolean @default(false)
@@ -34,4 +34,15 @@ model contact_table {
   contact_category String
   contact_user_id String
   contact_created_at DateTime @default(now())
+}
+
+model user_broadcast_read_table {
+  broadcast_read_id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id               String
+  broadcast_notification_id String
+  read_at               DateTime @default(now())
+
+  @@index([user_id])
+  @@index([broadcast_notification_id])
+  @@map("user_broadcast_read_table")
 }

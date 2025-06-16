@@ -45,8 +45,26 @@ export class NotificationsController {
     }
   }
 
-  @Post("send")
+  @Get("/get-count")
   @Rbac(["MEMBER"])
+  @UseGuards(JwtAuthGuard, RbacGuard)
+  async getNotificationCount(@Req() req: Request & { user: User }) {
+    try {
+      const user = req.user.user_metadata;
+
+      const data = await this.notifService.getNotificationCount(user.sub);
+
+      return data;
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Post("send")
+  @Rbac(["ADMIN", "MERCHANT"])
   @UseGuards(JwtAuthGuard, RbacGuard)
   async sendToUser(
     @Body(CustomZodPipe(SendNotificationFormDto)) body: SendNotificationFormDto
@@ -64,7 +82,7 @@ export class NotificationsController {
   }
 
   @Post("broadcast")
-  @Rbac(["MEMBER"])
+  @Rbac(["ADMIN"])
   @UseGuards(JwtAuthGuard, RbacGuard)
   async broadcast(
     @Body(CustomZodPipe(SendNotificationFormDto)) body: SendNotificationFormDto

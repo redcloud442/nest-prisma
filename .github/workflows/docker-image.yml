@@ -41,20 +41,20 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # - name: Set up kubectl
-      #   uses: azure/setup-kubectl@v3
-      #   with:
-      #     version: "v1.25.4"
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.25.4"
 
-      # - name: Create kubeconfig
-      #   run: |
-      #     mkdir -p $HOME/.kube
-      #     echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+      - name: Create kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
-      # - name: Deploy to Kubernetes
-      #   run: |
-      #     echo "🚀 Updating image in deployment 'mithril-socket-be'... .."
-      #     kubectl set image deployment/mithril-socket-be mithril-socket-be=ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }} -n mithril-socket
+      - name: Deploy to Kubernetes
+        run: |
+          echo "🚀 Updating image in deployment 'mithril-socket-be'... .."
+          kubectl set image deployment/mithril-socket-be mithril-socket-be=ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }} -n mithril-socket
 
-      #     echo "⏳ Waiting for rollout to complete..."
-      #     kubectl rollout status deployment/mithril-socket-be -n mithril-socket
+          echo "⏳ Waiting for rollout to complete..."
+          kubectl rollout status deployment/mithril-socket-be -n mithril-socket
