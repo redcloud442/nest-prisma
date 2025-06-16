@@ -6,7 +6,7 @@ import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  // Enable CORS
   app.enableCors({
     origin: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
