@@ -54,7 +54,7 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           echo "🚀 Updating image in deployment 'mithril-socket-be'... .."
-          kubectl set image deployment/mithril-socket-be mithril-socket-be=ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }} -n mithril-socket
+          kubectl set image deployment/mithril-socket-be mithril-socket-be=ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }} -n mithril
 
           echo "⏳ Waiting for rollout to complete..."
-          kubectl rollout status deployment/mithril-socket-be -n mithril-socket
+          kubectl rollout status deployment/mithril-socket-be -n mithril
