@@ -15,7 +15,7 @@ export const SendNotificationFormDto = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   imageUrl: z.array(z.string().optional()),
-  file: z.array(z.instanceof(File).optional()).optional(),
+  file: z.array(z.instanceof(File).optional()).optional().nullable(),
 });
 
 export type SendNotificationFormDto = z.infer<typeof SendNotificationFormDto>;

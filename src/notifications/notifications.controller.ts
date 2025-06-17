@@ -64,7 +64,7 @@ export class NotificationsController {
   }
 
   @Post("send")
-  @Rbac(["ADMIN", "MERCHANT"])
+  @Rbac(["ADMIN", "ACCOUNTING", "ACCOUNTING_HEAD"])
   @UseGuards(JwtAuthGuard, RbacGuard)
   async sendToUser(
     @Body(CustomZodPipe(SendNotificationFormDto)) body: SendNotificationFormDto
