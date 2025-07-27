@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,36 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model notification_table {
-  notification_id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  notification_title     String
-  notification_message   String
-  notification_created_at DateTime @default(now())
-  notification_image_url String[]
-  notification_user_id   String  
-  notification_is_read   Boolean @default(false)
-  notification_is_broadcast Boolean @default(false)
-
-  @@index([notification_user_id])
-  @@map("notification_table")
+model game_table {
+  game_id           String               @id @default(auto()) @map("_id") @db.ObjectId
+  member_id         String
+  game_rows         Int
+  game_cols         Int
+  game_level        String
+  game_total_mines  Int
+  game_started_at   DateTime             @default(now())
+  game_ended_at     DateTime?
+  game_status       game_status_enum     @default(PENDING)
+  board_cells       board_cell_table[]
+  revealed_cells    revealed_cell_table[]
+  game_created_at   DateTime             @default(now())
+  game_updated_at   DateTime             @updatedAt
 }
 
-model contact_table {
-  contact_id String @id @default(auto()) @map("_id") @db.ObjectId
-  contact_name String
-  contact_fb_link String
-  contact_category String
-  contact_user_id String
-  contact_created_at DateTime @default(now())
+model board_cell_table {
+  board_cell_id       String       @id @default(auto()) @map("_id") @db.ObjectId
+  board_game_id       String
+  cell_x              Int
+  cell_y              Int
+  cell_is_mine        Boolean
+  cell_adjacent_count Int
+  game_table          game_table   @relation(fields: [board_game_id], references: [game_id])
 }
 
-model user_broadcast_read_table {
-  broadcast_read_id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  user_id               String
-  broadcast_notification_id String
-  read_at               DateTime @default(now())
+model revealed_cell_table {
+  revealed_cell_id     String       @id @default(auto()) @map("_id") @db.ObjectId
+  revealed_game_id     String
+  cell_x               Int
+  cell_y               Int
+  cell_is_flagged      Boolean      @default(false)
+  game_table           game_table   @relation(fields: [revealed_game_id], references: [game_id])
+}
 
-  @@index([user_id])
-  @@index([broadcast_notification_id])
-  @@map("user_broadcast_read_table")
+enum game_status_enum {
+  PENDING
+  IN_PROGRESS
+  WON
+  LOST
 }

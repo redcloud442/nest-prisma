@@ -4,8 +4,7 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
-import { ContactModule } from "./contact/contact.module";
-import { NotificationsModule } from "./notifications/notifications.module";
+import { MinesweepModule } from "./minesweep/minesweep.module";
 import { PrismaService } from "./prisma/prisma.service";
 import { RedisService } from "./redis/redis.service";
 
@@ -23,9 +22,8 @@ import { RedisService } from "./redis/redis.service";
       isGlobal: true,
       envFilePath: ".env",
     }),
-    NotificationsModule,
-    ContactModule,
     AuthModule,
+    MinesweepModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, RedisService],

@@ -9,7 +9,7 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({
     origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     allowedHeaders: "Content-Type,Authorization",
   });
 
@@ -28,5 +28,6 @@ async function bootstrap() {
   SwaggerModule.setup("api/docs", app, document);
 
   await app.listen(4000);
+  console.log("Server is running on port 4000");
 }
 bootstrap();
