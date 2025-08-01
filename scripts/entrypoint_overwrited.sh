@@ -10,5 +10,6 @@ else
   echo "⚠️  Skipping Doppler secret injection (no token)"
 fi
 
+#test
 # Start app
 exec "$@"
