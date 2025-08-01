@@ -18,7 +18,6 @@ model game_table {
   game_ended_at     DateTime?
   game_status       game_status_enum     @default(PENDING)
   board_cells       board_cell_table[]
-  revealed_cells    revealed_cell_table[]
   game_created_at   DateTime             @default(now())
   game_updated_at   DateTime             @updatedAt
 }
@@ -31,15 +30,6 @@ model board_cell_table {
   cell_is_mine        Boolean
   cell_adjacent_count Int
   game_table          game_table   @relation(fields: [board_game_id], references: [game_id])
-}
-
-model revealed_cell_table {
-  revealed_cell_id     String       @id @default(auto()) @map("_id") @db.ObjectId
-  revealed_game_id     String
-  cell_x               Int
-  cell_y               Int
-  cell_is_flagged      Boolean      @default(false)
-  game_table           game_table   @relation(fields: [revealed_game_id], references: [game_id])
 }
 
 enum game_status_enum {
