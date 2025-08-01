@@ -47,7 +47,7 @@ export class MinesweepService {
           })),
         },
       },
-      include: { board_cells: false, revealed_cells: false },
+      include: { board_cells: false },
     });
 
     return {
