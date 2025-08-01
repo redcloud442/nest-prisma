@@ -2,11 +2,13 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   Req,
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt.auth.guard";
+import { Rbac } from "src/common/decorators/rbac.decorator";
 import { MinesweepService } from "./minesweep.service";
 
 @Controller("minesweep")
@@ -38,6 +40,17 @@ export class MinesweepController {
         body.selections,
         memberId
       );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Rbac(["ADMIN"])
+  @Get("history")
+  async getGameHistory() {
+    try {
+      return await this.minesweepService.getGameHistoryAdmin();
     } catch (error) {
       throw new BadRequestException(error.message);
     }

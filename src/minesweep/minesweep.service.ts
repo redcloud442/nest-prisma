@@ -10,10 +10,13 @@ export class MinesweepService {
   ) {}
 
   async startGame(userId: string) {
-    // if (lastStart) {
-    //   throw new ForbiddenException("Too many requests. Please wait.");
-    // }
-    // await this.redisService.set(redisKey, userId, { ex: 10 });
+    const redisKey = `minesweep:start:${userId}`;
+    const lastStart = await this.redisService.get(redisKey);
+
+    if (lastStart) {
+      throw new ForbiddenException("Too many requests. Please wait.");
+    }
+    await this.redisService.set(redisKey, userId, { ex: 10 });
 
     const hasWonGame = await this.checkUserIfAlreadyWon(userId);
 
@@ -47,7 +50,6 @@ export class MinesweepService {
       include: { board_cells: false, revealed_cells: false },
     });
 
-    // Only send board shape (no mine info)
     return {
       game_id: game.game_id,
       rows: game.game_rows,
@@ -84,19 +86,11 @@ export class MinesweepService {
 
       const hasMine = cellChecks.some((cell) => cell.cell_is_mine);
 
-      // Update game status
       await tx.game_table.update({
         where: { game_id: game_id },
         data: {
           game_status: hasMine ? "LOST" : "WON",
           game_ended_at: new Date(),
-          revealed_cells: {
-            create: cellChecks.map((c) => ({
-              cell_x: c.cell_x,
-              cell_y: c.cell_y,
-              cell_is_flagged: c.cell_is_mine,
-            })),
-          },
         },
       });
 
@@ -129,6 +123,21 @@ export class MinesweepService {
 
     return {
       hasWonGame,
+    };
+  }
+
+  async getGameHistoryAdmin() {
+    const games = await this.prisma.game_table.count({
+      where: {
+        game_status: "WON",
+      },
+    });
+
+    const totalGames = await this.prisma.game_table.count();
+
+    return {
+      gamesWon: games,
+      totalGames,
     };
   }
 

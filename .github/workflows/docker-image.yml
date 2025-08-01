@@ -2,9 +2,9 @@ name: Docker Image CI/CD
 
 on:
   push:
-    branches: ["mithril-socket"]
+    branches: ["aurora-socket"]
   pull_request:
-    branches: ["mithril-socket"]
+    branches: ["aurora-socket"]
 
 permissions:
   contents: read
@@ -37,7 +37,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }}
+          tags: ghcr.io/redcloud442/aurora:prod-be-socket-${{ env.SHORT_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -53,8 +53,8 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          echo "🚀 Updating image in deployment 'mithril-socket-be'... .."
-          kubectl set image deployment/mithril-socket-be mithril-socket-be=ghcr.io/redcloud442/mithril:prod-be-socket-${{ env.SHORT_SHA }} -n mithril
+          echo "🚀 Updating image in deployment 'aurora-socket-be'... .."
+          kubectl set image deployment/aurora-socket-be aurora-socket-be=ghcr.io/redcloud442/aurora:prod-be-socket-${{ env.SHORT_SHA }} -n aurora
 
           echo "⏳ Waiting for rollout to complete..."
-          kubectl rollout status deployment/mithril-socket-be -n mithril
+          kubectl rollout status deployment/aurora-socket-be -n aurora
