@@ -16,7 +16,7 @@ export class MinesweepService {
     if (lastStart) {
       throw new ForbiddenException("Too many requests. Please wait.");
     }
-    await this.redisService.set(redisKey, userId, { ex: 1 });
+    await this.redisService.set(redisKey, userId, { ex: 60 });
 
     const hasWonGame = await this.checkUserIfAlreadyWon(userId);
 
@@ -101,7 +101,11 @@ export class MinesweepService {
     });
 
     if (result.result === "WON") {
-      await this.winWebhook(memberId);
+      try {
+        await this.winWebhook(memberId);
+      } catch (err) {
+        console.error("Failed to trigger win webhook:", err);
+      }
     }
 
     return result;
