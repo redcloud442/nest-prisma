@@ -16,7 +16,7 @@ export class MinesweepService {
     if (lastStart) {
       throw new ForbiddenException("Too many requests. Please wait.");
     }
-    await this.redisService.set(redisKey, userId, { ex: 60 });
+    await this.redisService.set(redisKey, userId, { ex: 10 });
 
     const hasWonGame = await this.checkUserIfAlreadyWon(userId);
 
