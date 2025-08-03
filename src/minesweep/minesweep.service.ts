@@ -10,13 +10,13 @@ export class MinesweepService {
   ) {}
 
   async startGame(userId: string) {
-    const redisKey = `minesweep:start:${userId}`;
-    const lastStart = await this.redisService.get(redisKey);
+    // const redisKey = `minesweep:start:${userId}`;
+    // const lastStart = await this.redisService.get(redisKey);
 
-    if (lastStart) {
-      throw new ForbiddenException("Too many requests. Please wait.");
-    }
-    await this.redisService.set(redisKey, userId, { ex: 10 });
+    // if (lastStart) {
+    //   throw new ForbiddenException("Too many requests. Please wait.");
+    // }
+    // await this.redisService.set(redisKey, userId, { ex: 10 });
 
     const hasWonGame = await this.checkUserIfAlreadyWon(userId);
 
@@ -27,7 +27,7 @@ export class MinesweepService {
       };
     }
 
-    const fullBoard = this.generateBoard(5, 5, 18);
+    const fullBoard = this.generateBoard(5, 5, 20);
 
     const game = await this.prisma.game_table.create({
       data: {
