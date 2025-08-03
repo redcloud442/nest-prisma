@@ -27,7 +27,7 @@ export class MinesweepService {
       };
     }
 
-    const fullBoard = this.generateBoard(5, 5, 20);
+    const fullBoard = this.generateBoard(5, 5, 21);
 
     const game = await this.prisma.game_table.create({
       data: {
